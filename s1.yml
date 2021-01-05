@@ -1,0 +1,19 @@
+- name: Retrieving ErrorCounter file name
+  shell: find /home/tpimuser/epestatcounters/ErrorCounter/tmp_{{ ms_http_port.stdout }} -mmin -15 -type f
+  register: error_counter_filename
+
+
+- name: Retrieving ErrorCounter contents
+  shell: cat {{ error_counter_filename.stdout }}
+  register: error_counter_output
+
+- name: Create Consolidated File
+  copy:
+    content: "{{ error_counter_output.stdout }}"
+    dest: /home/tpimuser/epestatcounters/ErrorCounter/output/test.csv
+  delegate_to: localhost
+
+#- name: Append to consolidated file
+#  blockinfile:
+#    path: /home/tpimuser/epestatcounters/ErrorCounter/output/test.csv
+#    block: "{{ error_counter_output.stdout }}"
